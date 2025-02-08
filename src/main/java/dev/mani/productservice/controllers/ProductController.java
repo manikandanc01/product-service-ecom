@@ -1,7 +1,9 @@
 package dev.mani.productservice.controllers;
 
 import dev.mani.productservice.dtos.CreateProductDto;
+import dev.mani.productservice.dtos.ErrorDto;
 import dev.mani.productservice.dtos.UpdateProductDto;
+import dev.mani.productservice.exceptions.ProductNotFoundException;
 import dev.mani.productservice.models.Product;
 import dev.mani.productservice.services.ProductService;
 import org.springframework.http.HttpStatus;
@@ -31,16 +33,9 @@ public class ProductController {
     }
 
     @GetMapping("/product/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable("id") long id) {
-        Product resp = productService.getProductByID(id);
-        ResponseEntity<Product> response;
-        if (resp == null) {
-            response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            response = new ResponseEntity<>(resp, HttpStatus.OK);
-        }
-
-        return response;
+    public ResponseEntity<Product> getProductById(@PathVariable("id") long id) throws ProductNotFoundException {
+        Product product = productService.getProductByID(id);
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @PostMapping("/product")
@@ -93,5 +88,16 @@ public class ProductController {
         }
 
         return resp;
+    }
+
+    /* @ExceptionHandler -> This also works fine
+     * spring automatically detects the type of exception based on method signature
+     * If multiple exceptions are handled in the same function that time explicitly mention
+     * */
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleProductNotFoundException(ProductNotFoundException productNotException) {
+        ErrorDto errorDto = new ErrorDto();
+        errorDto.setMessage(productNotException.getMessage());
+        return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
     }
 }

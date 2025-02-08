@@ -1,6 +1,7 @@
 package dev.mani.productservice.services;
 
 import dev.mani.productservice.dtos.FakeStoreProductDto;
+import dev.mani.productservice.exceptions.ProductNotFoundException;
 import dev.mani.productservice.models.Product;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -21,17 +22,12 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
-    public Product getProductByID(long id) {
+    public Product getProductByID(long id) throws ProductNotFoundException {
         String url = "https://fakestoreapi.com/products/" + id;
-//        FakeStoreProductDto fakeStoreProduct = restTemplate.getForObject(url, FakeStoreProductDto.class);
         ResponseEntity<FakeStoreProductDto> response = restTemplate.getForEntity(url, FakeStoreProductDto.class);
-        FakeStoreProductDto fakeStoreProductDto = null;
-        if (response.getStatusCode() == HttpStatus.OK) {
-            fakeStoreProductDto = response.getBody();
-        }
-
+        FakeStoreProductDto fakeStoreProductDto = response.getBody();
         if (fakeStoreProductDto == null) {
-            return null;
+            throw new ProductNotFoundException("Product with id " + id + " not found");
         }
 
         return fakeStoreProductDto.toProduct();

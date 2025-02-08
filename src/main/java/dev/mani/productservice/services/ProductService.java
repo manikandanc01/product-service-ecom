@@ -1,11 +1,12 @@
 package dev.mani.productservice.services;
 
+import dev.mani.productservice.exceptions.ProductNotFoundException;
 import dev.mani.productservice.models.Product;
 
 import java.util.List;
 
 public interface ProductService {
-    Product getProductByID(long id);
+    Product getProductByID(long id) throws ProductNotFoundException;
 
     List<Product> getAllProducts();
 
