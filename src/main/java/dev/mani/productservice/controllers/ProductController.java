@@ -1,7 +1,6 @@
 package dev.mani.productservice.controllers;
 
 import dev.mani.productservice.dtos.CreateProductDto;
-import dev.mani.productservice.dtos.ErrorDto;
 import dev.mani.productservice.dtos.UpdateProductDto;
 import dev.mani.productservice.exceptions.ProductNotFoundException;
 import dev.mani.productservice.models.Product;
@@ -90,14 +89,4 @@ public class ProductController {
         return resp;
     }
 
-    /* @ExceptionHandler -> This also works fine
-     * spring automatically detects the type of exception based on method signature
-     * If multiple exceptions are handled in the same function that time explicitly mention
-     * */
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorDto> handleProductNotFoundException(ProductNotFoundException productNotException) {
-        ErrorDto errorDto = new ErrorDto();
-        errorDto.setMessage(productNotException.getMessage());
-        return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
-    }
 }
