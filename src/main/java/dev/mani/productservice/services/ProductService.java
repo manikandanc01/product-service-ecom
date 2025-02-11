@@ -20,7 +20,7 @@ public interface ProductService {
                           String description,
                           Double price,
                           String Category,
-                          String image);
+                          String image) throws ProductNotFoundException;
 
-    Product deleteProduct(Long id);
+    Product deleteProduct(Long id) throws ProductNotFoundException;
 }

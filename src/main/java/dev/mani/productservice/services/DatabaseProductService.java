@@ -25,13 +25,16 @@ public class DatabaseProductService implements ProductService {
 
     @Override
     public Product getProductByID(long id) throws ProductNotFoundException {
-
-        return null;
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isEmpty()) {
+            throw new ProductNotFoundException("Product not found");
+        }
+        return product.get();
     }
 
     @Override
     public List<Product> getAllProducts() {
-        return List.of();
+        return productRepository.findAll();
     }
 
     @Override
@@ -51,11 +54,11 @@ public class DatabaseProductService implements ProductService {
             newCategory.setCreatedAt(today);
             newCategory.setUpdatedAt(today);
 
-            category = categoryRepository.save(newCategory);
+            category = newCategory;
         } else {
             category = categoryOptional.get();
         }
-        
+
         product.setCategory(category);
         product.setCreatedAt(today);
         product.setUpdatedAt(today);
@@ -63,12 +66,45 @@ public class DatabaseProductService implements ProductService {
     }
 
     @Override
-    public Product updateProduct(Long id, String title, String description, Double price, String Category, String image) {
-        return null;
+    public Product updateProduct(Long id, String title, String description, Double price, String Category, String image) throws ProductNotFoundException {
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isEmpty()) {
+            throw new ProductNotFoundException("Product not found");
+        }
+
+        Product product = productOptional.get();
+        product.setTitle(title);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setImageUrl(image);
+
+        Optional<Category> categoryOptional = categoryRepository.findByTitle(Category);
+        Category category = null;
+        Date today = new Date();
+        if (categoryOptional.isEmpty()) {
+            Category newCategory = new Category();
+            newCategory.setTitle(Category);
+            newCategory.setCreatedAt(today);
+            newCategory.setUpdatedAt(today);
+            category = newCategory;
+        } else {
+            category = categoryOptional.get();
+        }
+
+        product.setUpdatedAt(today);
+        product.setCategory(category);
+
+        return productRepository.save(product);
     }
 
     @Override
-    public Product deleteProduct(Long id) {
-        return null;
+    public Product deleteProduct(Long id) throws ProductNotFoundException {
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isEmpty()) {
+            throw new ProductNotFoundException("Product not found");
+        }
+        Product product = productOptional.get();
+        productRepository.deleteById(id);
+        return product;
     }
 }

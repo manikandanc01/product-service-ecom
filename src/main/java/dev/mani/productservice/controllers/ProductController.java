@@ -57,7 +57,7 @@ public class ProductController {
     }
 
     @PutMapping("/product/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable("id") Long id, @RequestBody UpdateProductDto updateProductDto) {
+    public ResponseEntity<Product> updateProduct(@PathVariable("id") Long id, @RequestBody UpdateProductDto updateProductDto) throws ProductNotFoundException {
         Product product = productService.updateProduct(
                 id,
                 updateProductDto.getTitle(),
@@ -78,7 +78,7 @@ public class ProductController {
     }
 
     @DeleteMapping("product/{id}")
-    public ResponseEntity<Product> deleteProduct(@PathVariable("id") long id) {
+    public ResponseEntity<Product> deleteProduct(@PathVariable("id") long id) throws ProductNotFoundException {
         Product product = productService.deleteProduct(id);
         ResponseEntity<Product> resp;
         if (product == null) {

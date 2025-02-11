@@ -60,7 +60,7 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
-    public Product updateProduct(Long id, String title, String description, Double price, String Category, String image) {
+    public Product updateProduct(Long id, String title, String description, Double price, String Category, String image) throws ProductNotFoundException {
         String url = "https://fakestoreapi.com/products/" + id;
         FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
         fakeStoreProductDto.setTitle(title);
@@ -88,11 +88,15 @@ public class FakeStoreProductService implements ProductService {
             return null;
         }
 
+        if (response.getBody() == null) {
+            throw new ProductNotFoundException("Product with id " + id + " not found");
+        }
+
         return response.getBody().toProduct();
     }
 
     @Override
-    public Product deleteProduct(Long id) {
+    public Product deleteProduct(Long id) throws ProductNotFoundException {
         String url = "https://fakestoreapi.com/products/" + id;
         ResponseEntity<FakeStoreProductDto> response = restTemplate.exchange(
                 url,
@@ -107,7 +111,7 @@ public class FakeStoreProductService implements ProductService {
         }
 
         if (response.getBody() == null) {
-            return null;
+            throw new ProductNotFoundException("Product with id " + id + " not found");
         }
 
         return response.getBody().toProduct();
